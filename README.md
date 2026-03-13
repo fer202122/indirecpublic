@@ -1,4 +1,4 @@
-# Solar-Sail Transfer (Indirect Optimal Control)
+# Code for Characterization of Multi-Revolution Circular-to-Circular Solar-Sail Transfers Around Planets
 
 > JAX-based reference implementation for **planar planetocentric circular-to-circular solar-sail transfers** solved via **indirect optimal control** (single shooting).
 > Two formulations are provided:
