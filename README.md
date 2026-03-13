@@ -62,67 +62,16 @@ python -m pip install -e .
 
 ## Quickstart
 
-```python
-import numpy as np
-from sailtransfer import TransferProblem_TrueAnomaly
-
-# Earth-like parameters (SI)
-mu = 3.986004418e14                 # gravitational parameter [m^3/s^2]
-omega_body = 7.2921159e-5           # rotation rate [rad/s]
-r0 = 42164e3                         # initial radius [m]
-a0 = 1e-3                           # characteristic acceleration [m/s^2]
-raan = 0.0
-inc = 0.0
-arglat = 0.0
-theta_f = 2.0 * np.pi               # final physical true anomaly span [rad]
-
-# Build problem (true-anomaly formulation)
-prob = TransferProblem_TrueAnomaly(
-    r_0=r0,
-    mu_central_body=mu,
-    rotational_speed_central_body=omega_body,
-    a_0=a0,
-    raan=raan,
-    inclination=inc,
-    arg_of_latitude=arglat,
-    theta_f=theta_f
-)
-
-# Initial guess: [lambda_r0, lambda_t0, lambda_u0, lambda_v0, nu1, nu2]
-s0 = np.full(6, -2.0)
-
-# Solve (SciPy fsolve wrapped around a JAX residual)
-sol_params, res_norm, nfev, ok = prob.optimize_fsolve(s0, xtol_fsolve=1e-10)
-print(f"converged={ok}, ||res||={res_norm:.3e}, evals={nfev}")
-
-# Sample trajectory and get ECI vectors
-theta_bar = np.linspace(0.0, 1.0, 200)    # normalized samples
-pos_eci, vel_eci, acc_eci = prob.eci_vectors(sol_params, theta_bar)
-print(pos_eci.shape, vel_eci.shape, acc_eci.shape)  # (200, 3) each
-```
-
-For the **time formulation**, replace the class and pass `time_f`:
-
-```python
-from sailtransfer import TransferProblem_Time
-
-time_f = 24.0 * 3600.0  # final physical time span [s], example
-prob = TransferProblem_Time(r0, mu, omega_body, a0, raan, inc, arglat, time_f)
-s0 = np.zeros(6)
-sol_params, res_norm, nfev, ok = prob.optimize_fsolve(s0)
-tbar = np.linspace(0.0, 1.0, 200)
-pos_eci, vel_eci, acc_eci = prob.eci_vectors(sol_params, tbar)
-```
+Check the example.
 
 ---
 
-## Examples
+## Example
 
 Run from repo root after install:
 
 ```bash
 python examples/01_true_anomaly_demo.py
-python examples/02_time_formulation_demo.py
 ```
 
 Each script:
@@ -131,8 +80,6 @@ Each script:
 * solves with a basic initial guess,
 * prints convergence info, and
 * returns ECI vectors on a grid.
-
-> The dummy guess may not converge for all parameters; adjust as needed.
 
 ---
 
@@ -171,8 +118,7 @@ solar-sail-transfer/
 │  ├─ __init__.py
 │  └─ problems.py          # TransferProblem_TrueAnomaly, TransferProblem_Time
 ├─ examples/
-│  ├─ 01_true_anomaly_demo.py
-│  └─ 02_time_formulation_demo.py
+│  └─ 01_true_anomaly_demo.py
 └─ scripts/
    └─ solve_and_dump.py
 ```
@@ -198,6 +144,7 @@ solar-sail-transfer/
 * `inclination` — inclination [rad]
 * `arg_of_latitude` — argument of latitude at start [rad]
 * `theta_f` — final physical true anomaly span [rad] (trajectory integrates normalized `theta_bar` from 0 to 1)
+* `direction` — Ascending (1) or descending (-1)
 
 **Methods:**
 
@@ -220,11 +167,44 @@ Same as above, but with:
 
 ---
 
-## License
+## Authors
 
-MIT — see [LICENSE](./LICENSE).
+This software was developed by:  
+- *Oskar Miller* ([@oskarmiller](https://github.com/oskarmiller), Oskar.Miller2001@gmail.com, Technische Universiteit Delft   
+- *Fernando Gámez Losada* ([@fer202122](https://github.com/fer202122), ![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png) [0009-0007-6107-8484](https://orcid.org/0009-0007-6107-8484), F.GamezLosada@tudelft.nl, Technische Universiteit Delft   
+  
 
 ---
 
-**Attribution**
-This code originates from a master’s thesis implementation by Oskar Miller. If you use it in a publication, please cite the repository and the thesis accordingly.
+## License
+
+All source code files available in this repository (`./sailtransfer/`and `./scripts/`) are licensed under a GPL-3.0 license (see `./LICENSES/GPL-3.0.txt`). All other files are licensed under a **CC-BY 4.0** license (see `./LICENSES/CC-BY-4.0.txt`).   
+
+Copyright notice:
+
+Technische Universiteit Delft hereby disclaims all copyright interest in the program "" written by the Author. 
+Henri Werij, Faculty of Aerospace Engineering, Technische Universiteit Delft.
+
+© 2026, O. Miller, F. Gámez Losada
+
+---
+
+## References  
+
+- [Characterization of Multi-Revolution Circular-to-Circular
+Solar-Sail Transfers Around Planets](TODO BLA: Paste DOI paper here)  
+
+---
+
+## Cite this repository
+
+**How to cite this repository:** O. Miller, F. Gámez Losada, 2026, Code for Characterization of Multi-Revolution Circular-to-Circular
+Solar-Sail Transfers Around Planets. 4TU.ResearchData. Software. TODO BLA: Paste software DOI here
+
+---
+
+## Would you like to contribute?
+
+You are welcome to contribute! If you have any comments, feedback, or recommendations, feel free to reach out the author.  
+
+If you want to contribute directly, you are welcome to open an issue and fork this repository.
