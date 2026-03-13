@@ -23,7 +23,7 @@ Both classes expose:
 * [Project structure](#project-structure)
 * [API reference](#api-reference)
 * [Performance tips](#performance-tips)
-* [Authors] (#authors)
+* [Authors](#authors)
 * [License](#license)
 * [References](#references)
 * [Cite this repository](#cite-this-repository)
@@ -166,8 +166,8 @@ Same as above, but with:
 ## Authors
 
 This software was developed by:  
-- *Oskar Miller* ([@oskarmiller](https://github.com/oskarmiller), Oskar.Miller2001@gmail.com, Technische Universiteit Delft   
-- *Fernando Gámez Losada* ([@fer202122](https://github.com/fer202122), ![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png) [0009-0007-6107-8484](https://orcid.org/0009-0007-6107-8484), F.GamezLosada@tudelft.nl, Technische Universiteit Delft   
+- *Oskar Miller* ([@oskarmiller])(https://github.com/oskarmiller), Oskar.Miller2001@gmail.com, Technische Universiteit Delft   
+- *Fernando Gámez Losada* ([@fer202122])(https://github.com/fer202122), ![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png) [0009-0007-6107-8484](https://orcid.org/0009-0007-6107-8484), F.GamezLosada@tudelft.nl, Technische Universiteit Delft   
   
 
 ---
@@ -178,7 +178,8 @@ All source code files available in this repository (`./sailtransfer/`and `./scri
 
 Copyright notice:
 
-Technische Universiteit Delft hereby disclaims all copyright interest in the program "" written by the Author. 
+Technische Universiteit Delft hereby disclaims all copyright interest in the program "Characterization of Multi-Revolution Circular-to-Circular
+Solar-Sail Transfers Around Planets" written by the Author(s). 
 Henri Werij, Faculty of Aerospace Engineering, Technische Universiteit Delft.
 
 © 2026, O. Miller, F. Gámez Losada
@@ -201,6 +202,6 @@ Solar-Sail Transfers Around Planets. 4TU.ResearchData. Software. TODO BLA: Paste
 
 ## Would you like to contribute?
 
-You are welcome to contribute! If you have any comments, feedback, or recommendations, feel free to reach out the author.  
+You are welcome to contribute! If you have any comments, feedback, or recommendations, feel free to reach out to the authors.  
 
 If you want to contribute directly, you are welcome to open an issue and fork this repository.
