@@ -18,14 +18,16 @@ Both classes expose:
 
 * [Features](#features)
 * [Install](#install)
-* [Quickstart](#quickstart)
-* [Examples](#examples)
+* [Example](#example)
 * [Command-line helper](#command-line-helper)
 * [Project structure](#project-structure)
 * [API reference](#api-reference)
-* [Troubleshooting](#troubleshooting)
 * [Performance tips](#performance-tips)
+* [Authors] (#authors)
 * [License](#license)
+* [References](#references)
+* [Cite this repository](#cite-this-repository)
+* [Would you like to contribute?](#would-you-like-to-contribute?)
 
 ---
 
@@ -57,12 +59,6 @@ git clone https://github.com/oskarmiller/OskarMiller_MScThesis.git
 cd solar-sail-transfer
 python -m pip install -e .
 ```
-
----
-
-## Quickstart
-
-Check the example.
 
 ---
 
