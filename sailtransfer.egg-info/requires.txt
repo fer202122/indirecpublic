@@ -1,0 +1,6 @@
+numpy==2.0.1
+scipy==1.15.3
+jax==0.6.1
+jaxlib==0.6.1
+diffrax==0.7.0
+jaxopt==0.8.5

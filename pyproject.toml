@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sailtransfer"
+version = "0.1.0"
+description = "Indirect optimal control for planar solar-sail transfers"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "Oskar Miller", email = "oskar.miller@gscan.eu"}]
+license = {text = "MIT"}
+
+dependencies = [
+  "numpy==2.0.1",
+  "scipy==1.15.3",
+  "jax==0.6.1",
+  "jaxlib==0.6.1",
+  "diffrax==0.7.0",
+  "jaxopt==0.8.5"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sailtransfer*"]

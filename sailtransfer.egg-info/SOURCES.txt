@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+sailtransfer/__init__.py
+sailtransfer/problems.py
+sailtransfer/solution_library.py
+sailtransfer.egg-info/PKG-INFO
+sailtransfer.egg-info/SOURCES.txt
+sailtransfer.egg-info/dependency_links.txt
+sailtransfer.egg-info/requires.txt
+sailtransfer.egg-info/top_level.txt
