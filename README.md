@@ -22,7 +22,6 @@ Both classes expose:
 * [Command-line helper](#command-line-helper)
 * [Project structure](#project-structure)
 * [API reference](#api-reference)
-* [Performance tips](#performance-tips)
 * [Authors](#authors)
 * [License](#license)
 * [References](#references)
@@ -166,8 +165,8 @@ Same as above, but with:
 ## Authors
 
 This software was developed by:  
-- *Oskar Miller* ([@oskarmiller])(https://github.com/oskarmiller), Oskar.Miller2001@gmail.com, Technische Universiteit Delft   
-- *Fernando Gámez Losada* ([@fer202122])(https://github.com/fer202122), ![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png) [0009-0007-6107-8484](https://orcid.org/0009-0007-6107-8484), F.GamezLosada@tudelft.nl, Technische Universiteit Delft   
+- *Oskar Miller* ([@oskarmiller](https://github.com/oskarmiller)), Oskar.Miller2001@gmail.com, Technische Universiteit Delft   
+- *Fernando Gámez Losada* ([@fer202122](https://github.com/fer202122)), ![ORCID logo](https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png) [0009-0007-6107-8484](https://orcid.org/0009-0007-6107-8484), F.GamezLosada@tudelft.nl, Technische Universiteit Delft   
   
 
 ---
