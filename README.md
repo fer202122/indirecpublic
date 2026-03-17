@@ -195,7 +195,7 @@ Solar-Sail Transfers Around Planets](TODO BLA: Paste DOI paper here)
 ## Cite this repository
 
 **How to cite this repository:** O. Miller, F. Gámez Losada, 2026, Code for Characterization of Multi-Revolution Circular-to-Circular
-Solar-Sail Transfers Around Planets. 4TU.ResearchData. Software. TODO BLA: Paste software DOI here
+Solar-Sail Transfers Around Planets. 4TU.ResearchData. Software. https://doi.org/10.4121/36e472de-7ccf-44b4-b3fa-7215d094faf1
 
 ---
 

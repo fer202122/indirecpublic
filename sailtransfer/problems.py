@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Oskar Miller <Oskar.Miller2001@gmail.com>
+# SPDX-FileCopyrightText: 2026 Fernando Gamez Losada <F.GamezLosada@tudelft.nl>
+# SPDX-License-Identifier: MIT
 import numpy as np
 import jax
 import jax.numpy as jnp

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Oskar Miller <Oskar.Miller2001@gmail.com>
+# SPDX-FileCopyrightText: 2026 Fernando Gamez Losada <F.GamezLosada@tudelft.nl>
+# SPDX-License-Identifier: MIT
 import argparse
 import numpy as np
 from sailtransfer import TransferProblem_TrueAnomaly, TransferProblem_Time
