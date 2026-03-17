@@ -67,7 +67,13 @@ def main():
     lam_vy = lam_u * np.sin(theta) + lam_v * np.cos(theta)
     lam_c[:, 2:4] = np.hstack((lam_vx[:, None], lam_vy[:, None]))
 
-    # Dump to csv file for plotting
+    # Dump to csv file for plotting:
+    # - theta_bar: Normalized true anomaly (0 to 1) [-]
+    # - x_c, y_c: Normalized position in Orbital Frame (I) [-]
+    # - vx_c, vy_c: Normalized velocity in Orbital Frame (I) [-]
+    # - nx_s, ny_s, nz_s: Components of normal unit vector in Sunlight Frame (S) [-]
+    # - lam_x, lam_y, lam_vx, lam_vy, lam_t_bar: Costate components in Orbital Frame (I) (I) [-]
+    # - t_bar: Normalized time (order of magnitude of one)
     data = np.hstack((theta_bar[:, None], pos_c, vel_c, t_bar[:, None], n_s, lam_c))
     header = "theta_bar,x_c,y_c,vx_c,vy_c,t_bar,nx_s,ny_s,nz_s,lam_x,lam_y,lam_vx,lam_vy,lam_t_bar"
     np.savetxt("indirect_output.csv", data, delimiter=",", header=header, comments='')

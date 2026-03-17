@@ -85,19 +85,24 @@ A tiny CLI is included to solve and dump CSVs:
 ```bash
 python scripts/solve_and_dump.py \
   --mode true_anomaly \
-  --r0 42164e3 \
+  --r0 20000e3 \
   --mu 3.986004418e14 \
   --omega 7.2921159e-5 \
-  --a0 0.001 \
-  --samples 200 \
+  --a0 0.05e-3 \
+  --raan 30.0 \
+  --inc 60.0 \
+  --arglat 270.0 \
+  --theta_f 100 \
+  --direction 1 \
+  --samples 40 \
   --outprefix eci
 ```
 
 Outputs:
 
-* `eci_pos.csv` with columns `x,y,z` (meters),
-* `eci_vel.csv` with columns `vx,vy,vz` (meters per second),
-* `eci_acc.csv` with columns `nx,ny,nz` (meters per second squared).
+* `eci_pos.csv` with columns `x,y,z` in Ecliptic Frame (E) (meters),
+* `eci_vel.csv` with columns `vx,vy,vz` in Ecliptic Frame (E) (meters per second),
+* `eci_acc.csv` with columns `nx,ny,nz` in Ecliptic Frame (E) (meters per second squared).
 
 ---
 
