@@ -173,7 +173,7 @@ This software was developed by:
 
 ## License
 
-All source code files available in this repository (`./sailtransfer/`and `./scripts/`) are licensed under a GPL-3.0 license (see `./LICENSES/GPL-3.0.txt`). All other files are licensed under a **CC-BY 4.0** license (see `./LICENSES/CC-BY-4.0.txt`).   
+All source code files available in this repository are licensed under a MIT license (see `./LICENSE`).
 
 Copyright notice:
 
