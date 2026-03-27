@@ -7,12 +7,12 @@ name = "sailtransfer"
 version = "0.1.0"
 description = "Indirect optimal control for planar solar-sail transfers"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 authors = [{name = "Oskar Miller", email = "oskar.miller@gscan.eu"}]
 license = {text = "MIT"}
 
 dependencies = [
-  "numpy==2.0.1",
+  "numpy==2.4.3",
   "scipy==1.15.3",
   "jax==0.6.1",
   "jaxlib==0.6.1",

@@ -45,9 +45,9 @@ def main():
     # - x, y, z: Position in Ecliptic Frame (E) frame [m]
     # - vx, vy, vz: Velocity in Ecliptic Frame (E) frame [m/s]
     # - nx, ny, nz: Components of normal unit vector in Ecliptic Frame (E) frame [-]
-    np.savetxt(f"{a.outprefix}_pos.csv", np.asarray(pos), delimiter=",", header="x,y,z", comments="")
-    np.savetxt(f"{a.outprefix}_vel.csv", np.asarray(vel), delimiter=",", header="vx,vy,vz", comments="")
-    np.savetxt(f"{a.outprefix}_acc.csv", np.asarray(acc), delimiter=",", header="nx,ny,nz", comments="")
+    np.savetxt(f"./output/{a.outprefix}_pos.csv", np.asarray(pos), delimiter=",", header="x,y,z", comments="")
+    np.savetxt(f"./output/{a.outprefix}_vel.csv", np.asarray(vel), delimiter=",", header="vx,vy,vz", comments="")
+    np.savetxt(f"./output/{a.outprefix}_acc.csv", np.asarray(acc), delimiter=",", header="nx,ny,nz", comments="")
     print("Wrote CSVs with ECI vectors.")
 
 if __name__ == "__main__":

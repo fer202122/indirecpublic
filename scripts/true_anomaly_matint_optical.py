@@ -9,7 +9,7 @@ import time
 def main():
     # Read problem parameters from the matlab-generated csv file
     params = np.loadtxt("indirect_input.csv", delimiter=",")
-    # params = np.loadtxt("/Users/fernando/workspace/gpops2cases/solarSail2D/cranked_cart_maxr/normal_comps_sm_suns_opt/work/indirect_input.csv", delimiter=",")
+    
     mu = params[0]
     omega_body = params[1]
     r0 = params[2]
@@ -78,11 +78,11 @@ def main():
     # Dump to csv file for MATLAB plotting
     data = np.hstack((theta_bar[:, None], pos_c, vel_c, t_bar[:, None], n_s, lam_c))
     header = "theta_bar,x_c,y_c,vx_c,vy_c,t_bar,nx_s,ny_s,nz_s,lam_x,lam_y,lam_vx,lam_vy,lam_t_bar"
-    np.savetxt("indirect_output.csv", data, delimiter=",", header=header, comments='')
+    np.savetxt("./output/indirect_output.csv", data, delimiter=",", header=header, comments='')
 
     data = np.hstack((res_norm, nfev, ok, runtime))
     header = "res_norm,nfev,ok,runtime"
-    np.savetxt("indirect_output_conv.csv", data, delimiter=",", header=header, comments='')
+    np.savetxt("./output/indirect_output_conv.csv", data, delimiter=",", header=header, comments='')
 
 if __name__ == "__main__":
     main()
