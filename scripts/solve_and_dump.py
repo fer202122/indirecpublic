@@ -7,7 +7,7 @@ import time
 from sailtransfer import TransferProblem_TrueAnomaly, TransferProblem_Time, TransferProblem_TrueAnomaly_Optical
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Solve solar-sail transfer and dump ECI CSVs.")
+    p = argparse.ArgumentParser(description="Solve solar-sail transfer and dump ECL CSVs.")
     p.add_argument("--mode", choices=["true_anomaly", "true_anomaly_optical", "time"], default="true_anomaly")
     p.add_argument("--r0", type=float, required=True, help="Initial radius [m]")
     p.add_argument("--mu", type=float, required=True, help="Gravitational parameter [m^3/s^2]")

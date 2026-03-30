@@ -158,9 +158,7 @@ This script prompts the convergence information to the terminal, and generates t
 │   ├── requires.txt
 │   └── top_level.txt
 └── scripts
-    ├── solve_and_dump.py
-    ├── true_anomaly_matint.py
-    └── true_anomaly_matint_optical.py
+    └── solve_and_dump.py
 ```
 
 ---

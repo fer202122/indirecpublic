@@ -84,11 +84,11 @@ class TransferProblem_TrueAnomaly:
             theta = theta_bar * self.theta_f_jax + self.arg_of_latitude_jax
             time = time_bar * self.time_f_jax
 
-            # SLF to ECI
+            # SLF to ECL
             cos_om_t = jnp.cos(self.omega_body_jax * time)
             sin_om_t = jnp.sin(self.omega_body_jax * time)
-            R_ECI_to_SLF = jnp.array([[cos_om_t,-sin_om_t,0.],[sin_om_t,cos_om_t,0.],[0.,0.,1.]], dtype=jnp.float64)
-            R_SLF_to_ECI = R_ECI_to_SLF.T
+            R_ECL_to_SLF = jnp.array([[cos_om_t,-sin_om_t,0.],[sin_om_t,cos_om_t,0.],[0.,0.,1.]], dtype=jnp.float64)
+            R_SLF_to_ECL = R_ECL_to_SLF.T
 
             # RAAN rotation
             cos_Om = jnp.cos(self.raan_jax)
@@ -99,8 +99,8 @@ class TransferProblem_TrueAnomaly:
             cos_inc = jnp.cos(self.inclination_jax); sin_inc = jnp.sin(self.inclination_jax)
             Rx_incl = jnp.array([[1.,0.,0.],[0.,cos_inc,-sin_inc],[0.,sin_inc,cos_inc]], dtype=jnp.float64)
 
-            # ORB to ECI
-            R_ORB_to_ECI = jnp.matmul(Rz_Omega, Rx_incl)
+            # ORB to ECL
+            R_ORB_to_ECL = jnp.matmul(Rz_Omega, Rx_incl)
 
             # RTN to ORB
             cos_th = jnp.cos(theta)
@@ -109,8 +109,8 @@ class TransferProblem_TrueAnomaly:
             R_ORB_to_RTN = R_RTN_to_ORB.T
 
             # Combined
-            R_RTN_to_ECI = jnp.matmul(R_ORB_to_ECI, R_RTN_to_ORB)
-            R_RTN_to_SLF = jnp.matmul(R_ECI_to_SLF, R_RTN_to_ECI)
+            R_RTN_to_ECL = jnp.matmul(R_ORB_to_ECL, R_RTN_to_ORB)
+            R_RTN_to_SLF = jnp.matmul(R_ECL_to_SLF, R_RTN_to_ECL)
             
             return R_RTN_to_SLF
         self._rotation_matrices_func = _calculate_rotation_matrices_jit
@@ -374,7 +374,7 @@ class TransferProblem_TrueAnomaly:
         Returns
         -------
         Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]
-            Tuple of (pos_eci, vel_eci, acc_eci), each shaped (N, 3) with
+            Tuple of (pos_ecl, vel_ecl, acc_ecl), each shaped (N, 3) with
             columns (x, y, z), (vx, vy, vz), (nx, ny, nz) in SI units.
         """
         # 1) Integrate to get state+costate history at these samples
@@ -397,28 +397,28 @@ class TransferProblem_TrueAnomaly:
             # Rotation matrices
             R_rtn_to_slf = self._rotation_matrices_func(theta_bar, time_bar)
 
-            # Control acceleration in RTN (physical units), then rotate to ECI
+            # Control acceleration in RTN (physical units), then rotate to ECL
             a_rtn = self._acceleration_func(lambda_u, lambda_v, R_rtn_to_slf)
 
-            # Build ECI <-> SLF block for the current time, then recover RTN->ECI
+            # Build ECL <-> SLF block for the current time, then recover RTN->ECL
             time_phys = time_bar * self.time_f_jax
             cos_om_t = jnp.cos(self.omega_body_jax * time_phys)
             sin_om_t = jnp.sin(self.omega_body_jax * time_phys)
-            R_eci_to_slf = jnp.array(
+            R_ecl_to_slf = jnp.array(
                 [[cos_om_t, -sin_om_t, 0.0],
                 [sin_om_t,  cos_om_t, 0.0],
                 [0.0,       0.0,      1.0]],
                 dtype=jnp.float64
             )
-            R_slf_to_eci = R_eci_to_slf.T
-            R_rtn_to_eci = jnp.matmul(R_slf_to_eci, R_rtn_to_slf)
+            R_slf_to_ecl = R_ecl_to_slf.T
+            R_rtn_to_ecl = jnp.matmul(R_slf_to_ecl, R_rtn_to_slf)
 
-            # Rotate RTN vectors into ECI
-            pos_eci = jnp.matmul(R_rtn_to_eci, pos_rtn)
-            vel_eci = jnp.matmul(R_rtn_to_eci, vel_rtn)
-            acc_eci = jnp.matmul(R_rtn_to_eci, a_rtn)
+            # Rotate RTN vectors into ECL
+            pos_ecl = jnp.matmul(R_rtn_to_ecl, pos_rtn)
+            vel_ecl = jnp.matmul(R_rtn_to_ecl, vel_rtn)
+            acc_ecl = jnp.matmul(R_rtn_to_ecl, a_rtn)
 
-            return pos_eci, vel_eci, acc_eci
+            return pos_ecl, vel_ecl, acc_ecl
 
         # Vectorize over samples
         pos, vel, acc = jax.vmap(one_sample, in_axes=(0, 0))(theta_bar_arr, ys)
@@ -594,11 +594,11 @@ class TransferProblem_Time:
             theta = theta_bar * self.theta_f_jax + self.arg_of_latitude_jax
             time = time_bar * self.time_f_jax
 
-            # SLF to ECI
+            # SLF to ECL
             cos_om_t = jnp.cos(self.omega_body_jax * time)
             sin_om_t = jnp.sin(self.omega_body_jax * time)
-            R_ECI_to_SLF = jnp.array([[cos_om_t,-sin_om_t,0.],[sin_om_t,cos_om_t,0.],[0.,0.,1.]], dtype=jnp.float64)
-            R_SLF_to_ECI = R_ECI_to_SLF.T
+            R_ECL_to_SLF = jnp.array([[cos_om_t,-sin_om_t,0.],[sin_om_t,cos_om_t,0.],[0.,0.,1.]], dtype=jnp.float64)
+            R_SLF_to_ECL = R_ECL_to_SLF.T
 
             # RAAN rotation
             cos_Om = jnp.cos(self.raan_jax)
@@ -609,8 +609,8 @@ class TransferProblem_Time:
             cos_inc = jnp.cos(self.inclination_jax); sin_inc = jnp.sin(self.inclination_jax)
             Rx_incl = jnp.array([[1.,0.,0.],[0.,cos_inc,-sin_inc],[0.,sin_inc,cos_inc]], dtype=jnp.float64)
 
-            # ORB to ECI
-            R_ORB_to_ECI = jnp.matmul(Rz_Omega, Rx_incl)
+            # ORB to ECL
+            R_ORB_to_ECL = jnp.matmul(Rz_Omega, Rx_incl)
 
             # RTN to ORB
             cos_th = jnp.cos(theta)
@@ -619,8 +619,8 @@ class TransferProblem_Time:
             R_ORB_to_RTN = R_RTN_to_ORB.T
 
             # Combined
-            R_RTN_to_ECI = jnp.matmul(R_ORB_to_ECI, R_RTN_to_ORB)
-            R_RTN_to_SLF = jnp.matmul(R_ECI_to_SLF, R_RTN_to_ECI)
+            R_RTN_to_ECL = jnp.matmul(R_ORB_to_ECL, R_RTN_to_ORB)
+            R_RTN_to_SLF = jnp.matmul(R_ECL_to_SLF, R_RTN_to_ECL)
             
             return R_RTN_to_SLF
         self._rotation_matrices_func = _calculate_rotation_matrices_jit
@@ -872,7 +872,7 @@ class TransferProblem_Time:
         time_bar_points: np.ndarray
     ) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         """
-        Given an optimal solution, return ECI position, velocity, and sail acceleration
+        Given an optimal solution, return ECL position, velocity, and sail acceleration
         at the specified normalized time samples.
 
         Parameters
@@ -885,7 +885,7 @@ class TransferProblem_Time:
         Returns
         -------
         Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]
-            Tuple of (pos_eci, vel_eci, acc_eci), each shaped (N, 3) with
+            Tuple of (pos_ecl, vel_ecl, acc_ecl), each shaped (N, 3) with
             columns (x, y, z), (vx, vy, vz), (nx, ny, nz) in SI units.
         """
         # 1) Integrate to get state+costate history at these samples
@@ -908,28 +908,28 @@ class TransferProblem_Time:
             # Rotation matrices
             R_rtn_to_slf = self._rotation_matrices_func(theta_bar, time_bar)
 
-            # Control acceleration in RTN (physical units), then rotate to ECI
+            # Control acceleration in RTN (physical units), then rotate to ECL
             a_rtn = self._acceleration_func(lambda_u, lambda_v, R_rtn_to_slf)
 
-            # Build ECI <-> SLF block for the current time, then recover RTN->ECI
+            # Build ECL <-> SLF block for the current time, then recover RTN->ECL
             time_phys = time_bar * self.time_f_jax
             cos_om_t = jnp.cos(self.omega_body_jax * time_phys)
             sin_om_t = jnp.sin(self.omega_body_jax * time_phys)
-            R_eci_to_slf = jnp.array(
+            R_ecl_to_slf = jnp.array(
                 [[cos_om_t, -sin_om_t, 0.0],
                 [sin_om_t,  cos_om_t, 0.0],
                 [0.0,       0.0,      1.0]],
                 dtype=jnp.float64
             )
-            R_slf_to_eci = R_eci_to_slf.T
-            R_rtn_to_eci = jnp.matmul(R_slf_to_eci, R_rtn_to_slf)
+            R_slf_to_ecl = R_ecl_to_slf.T
+            R_rtn_to_ecl = jnp.matmul(R_slf_to_ecl, R_rtn_to_slf)
 
-            # Rotate RTN vectors into ECI
-            pos_eci = jnp.matmul(R_rtn_to_eci, pos_rtn)
-            vel_eci = jnp.matmul(R_rtn_to_eci, vel_rtn)
-            acc_eci = jnp.matmul(R_rtn_to_eci, a_rtn)
+            # Rotate RTN vectors into ECL
+            pos_ecl = jnp.matmul(R_rtn_to_ecl, pos_rtn)
+            vel_ecl = jnp.matmul(R_rtn_to_ecl, vel_rtn)
+            acc_ecl = jnp.matmul(R_rtn_to_ecl, a_rtn)
 
-            return pos_eci, vel_eci, acc_eci
+            return pos_ecl, vel_ecl, acc_ecl
 
         # Vectorize over samples
         pos, vel, acc = jax.vmap(one_sample, in_axes=(0, 0))(time_bar_arr, ys)
@@ -1118,11 +1118,11 @@ class TransferProblem_TrueAnomaly_Optical:
             theta = theta_bar * self.theta_f_jax + self.arg_of_latitude_jax
             time = time_bar * self.time_f_jax
 
-            # SLF to ECI
+            # SLF to ECL
             cos_om_t = jnp.cos(self.omega_body_jax * time)
             sin_om_t = jnp.sin(self.omega_body_jax * time)
-            R_ECI_to_SLF = jnp.array([[cos_om_t,-sin_om_t,0.],[sin_om_t,cos_om_t,0.],[0.,0.,1.]], dtype=jnp.float64)
-            R_SLF_to_ECI = R_ECI_to_SLF.T
+            R_ECL_to_SLF = jnp.array([[cos_om_t,-sin_om_t,0.],[sin_om_t,cos_om_t,0.],[0.,0.,1.]], dtype=jnp.float64)
+            R_SLF_to_ECL = R_ECL_to_SLF.T
 
             # RAAN rotation
             cos_Om = jnp.cos(self.raan_jax)
@@ -1133,8 +1133,8 @@ class TransferProblem_TrueAnomaly_Optical:
             cos_inc = jnp.cos(self.inclination_jax); sin_inc = jnp.sin(self.inclination_jax)
             Rx_incl = jnp.array([[1.,0.,0.],[0.,cos_inc,-sin_inc],[0.,sin_inc,cos_inc]], dtype=jnp.float64)
 
-            # ORB to ECI
-            R_ORB_to_ECI = jnp.matmul(Rz_Omega, Rx_incl)
+            # ORB to ECL
+            R_ORB_to_ECL = jnp.matmul(Rz_Omega, Rx_incl)
 
             # RTN to ORB
             cos_th = jnp.cos(theta)
@@ -1143,8 +1143,8 @@ class TransferProblem_TrueAnomaly_Optical:
             R_ORB_to_RTN = R_RTN_to_ORB.T
 
             # Combined
-            R_RTN_to_ECI = jnp.matmul(R_ORB_to_ECI, R_RTN_to_ORB)
-            R_RTN_to_SLF = jnp.matmul(R_ECI_to_SLF, R_RTN_to_ECI)
+            R_RTN_to_ECL = jnp.matmul(R_ORB_to_ECL, R_RTN_to_ORB)
+            R_RTN_to_SLF = jnp.matmul(R_ECL_to_SLF, R_RTN_to_ECL)
             
             return R_RTN_to_SLF
         self._rotation_matrices_func = _calculate_rotation_matrices_jit
@@ -1437,7 +1437,7 @@ class TransferProblem_TrueAnomaly_Optical:
         theta_bar_points: np.ndarray
     ) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         """
-        Given an optimal solution, return ECI position, velocity, and sail acceleration
+        Given an optimal solution, return ECL position, velocity, and sail acceleration
         at the specified normalized true anomaly samples.
 
         Parameters
@@ -1450,7 +1450,7 @@ class TransferProblem_TrueAnomaly_Optical:
         Returns
         -------
         Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]
-            Tuple of (pos_eci, vel_eci, acc_eci), each shaped (N, 3) with
+            Tuple of (pos_ecl, vel_ecl, acc_ecl), each shaped (N, 3) with
             columns (x, y, z), (vx, vy, vz), (nx, ny, nz) in SI units.
         """
         # 1) Integrate to get state+costate history at these samples
@@ -1473,28 +1473,28 @@ class TransferProblem_TrueAnomaly_Optical:
             # Rotation matrices
             R_rtn_to_slf = self._rotation_matrices_func(theta_bar, time_bar)
 
-            # Control acceleration in RTN (physical units), then rotate to ECI
+            # Control acceleration in RTN (physical units), then rotate to ECL
             a_rtn = self._acceleration_func(lambda_u, lambda_v, R_rtn_to_slf)
 
-            # Build ECI <-> SLF block for the current time, then recover RTN->ECI
+            # Build ECL <-> SLF block for the current time, then recover RTN->ECL
             time_phys = time_bar * self.time_f_jax
             cos_om_t = jnp.cos(self.omega_body_jax * time_phys)
             sin_om_t = jnp.sin(self.omega_body_jax * time_phys)
-            R_eci_to_slf = jnp.array(
+            R_ecl_to_slf = jnp.array(
                 [[cos_om_t, -sin_om_t, 0.0],
                 [sin_om_t,  cos_om_t, 0.0],
                 [0.0,       0.0,      1.0]],
                 dtype=jnp.float64
             )
-            R_slf_to_eci = R_eci_to_slf.T
-            R_rtn_to_eci = jnp.matmul(R_slf_to_eci, R_rtn_to_slf)
+            R_slf_to_ecl = R_ecl_to_slf.T
+            R_rtn_to_ecl = jnp.matmul(R_slf_to_ecl, R_rtn_to_slf)
 
-            # Rotate RTN vectors into ECI
-            pos_eci = jnp.matmul(R_rtn_to_eci, pos_rtn)
-            vel_eci = jnp.matmul(R_rtn_to_eci, vel_rtn)
-            acc_eci = jnp.matmul(R_rtn_to_eci, a_rtn)
+            # Rotate RTN vectors into ECL
+            pos_ecl = jnp.matmul(R_rtn_to_ecl, pos_rtn)
+            vel_ecl = jnp.matmul(R_rtn_to_ecl, vel_rtn)
+            acc_ecl = jnp.matmul(R_rtn_to_ecl, a_rtn)
 
-            return pos_eci, vel_eci, acc_eci
+            return pos_ecl, vel_ecl, acc_ecl
 
         # Vectorize over samples
         pos, vel, acc = jax.vmap(one_sample, in_axes=(0, 0))(theta_bar_arr, ys)
