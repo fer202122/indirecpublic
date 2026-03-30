@@ -32,6 +32,8 @@ class TransferProblem_TrueAnomaly:
         Argument of latitude of the starting point (radians).
     theta_f : float
         Final normalized true anomaly value.
+    direction : int
+        Direction of transfer (1 for ascending, -1 for descending).
 
     Usage
     -----
@@ -353,13 +355,13 @@ class TransferProblem_TrueAnomaly:
 
         return sol.ys
     
-    def eci_vectors(
+    def ecliptic_vectors(
         self,
         s_solution: jnp.ndarray,
         theta_bar_points: np.ndarray
     ) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         """
-        Given an optimal solution, return ECI position, velocity, and sail acceleration
+        Given an optimal solution, return Ecliptic position, velocity, and sail acceleration
         at the specified normalized true anomaly samples.
 
         Parameters
@@ -864,7 +866,7 @@ class TransferProblem_Time:
 
         return sol.ys
     
-    def eci_vectors(
+    def ecliptic_vectors(
         self,
         s_solution: jnp.ndarray,
         time_bar_points: np.ndarray
@@ -1053,6 +1055,10 @@ class TransferProblem_TrueAnomaly_Optical:
         Argument of latitude of the starting point (radians).
     theta_f : float
         Final normalized true anomaly value.
+    direction : int
+        Direction of transfer (1 for ascending, -1 for descending).
+    C1, C2, C3 : float
+        Coefficients of the solar-sail aceeleration optical model.
 
     Usage
     -----
@@ -1070,11 +1076,13 @@ class TransferProblem_TrueAnomaly_Optical:
                  inclination: float,
                  arg_of_latitude: float,
                  theta_f: float,
+                 direction: int,
                  C1: float,
                  C2: float,
                  C3: float
                 ):
 
+        self.r_0 = r_0
         self.mu_central_body = mu_central_body
         self.rotational_speed_central_body = rotational_speed_central_body
         self.a_0 = a_0
@@ -1082,7 +1090,7 @@ class TransferProblem_TrueAnomaly_Optical:
         self.inclination = inclination
         self.arg_of_latitude = arg_of_latitude
         self.theta_f = theta_f
-        self.r_0 = r_0
+        self.direction = direction
         self.C1 = C1
         self.C2 = C2
         self.C3 = C3
@@ -1294,7 +1302,7 @@ class TransferProblem_TrueAnomaly_Optical:
         def _terminal_function_phi_jit(state_final_vars: jnp.ndarray, p_free_params: jnp.ndarray) -> jnp.ndarray:
             r_bar = state_final_vars[0]
             Psi = self._terminal_constraint_func(state_final_vars)
-            Phi = -r_bar + jnp.dot(p_free_params, Psi)
+            Phi = -1 * self.direction * r_bar + jnp.dot(p_free_params, Psi)
             return Phi
         self._terminal_phi_func = _terminal_function_phi_jit
         self._grad_Phi_wrt_state_func = jax.jit(jax.grad(self._terminal_phi_func, argnums=0))
@@ -1423,7 +1431,7 @@ class TransferProblem_TrueAnomaly_Optical:
 
         return sol.ys
     
-    def eci_vectors(
+    def ecliptic_vectors(
         self,
         s_solution: jnp.ndarray,
         theta_bar_points: np.ndarray

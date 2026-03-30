@@ -15,7 +15,7 @@ Both classes expose:
 
 * `optimize_fsolve(...)` and `optimize_jaxopt(...)` to solve for the optimal initial costates and multipliers.  
 * `integrate(...)` to sample the optimal state+costate along the trajectory.  
-* `eci_vectors(...)` to return the Earth-Centered Inertial (ECI) **position**, **velocity**, and **solar-sail acceleration** at requested samples.  
+* `ecliptic_vectors(...)` to return the Ecliptic (ECL) **position**, **velocity**, and **solar-sail acceleration** at requested samples.  
 
 ---
 
@@ -39,10 +39,10 @@ Both classes expose:
 
 * Indirect OCP with **single shooting** and tight terminal constraints (circularization).  
 * Thrust direction from **primer vector**; sail law uses cone/clock angles in a **sun-line frame**.  
-* Clean frame handling (Radial-Transverse-Normal (RTN) → Orbital (ORB) → Earth Centered Inertial (ECI) → Sun-Line Frame (SLF)) with robust numerics (clamps/epsilons).  
+* Clean frame handling (Radial-Transverse-Normal (RTN) → Orbital (ORB) → Ecliptic (ECL) → Sun-Line Frame (SLF)) with robust numerics (clamps/epsilons).  
 * High-accuracy integration via **diffrax** (Dopri8 + PID controller).  
 * Pure JAX math for speed and jit-ability.  
-* Convenience function `eci_vectors(...)` to get position **(x, y, z)**, velocity **(vx, vy, vz)** and acceleration **(nx, ny, nz)** in **ECI** frame.  
+* Convenience function `ecliptic_vectors(...)` to get position **(x, y, z)**, velocity **(vx, vy, vz)** and acceleration **(nx, ny, nz)** in **ECL** frame.  
 
 ---
 
@@ -98,17 +98,17 @@ python scripts/solve_and_dump.py \
   --raan 30.0 \
   --inc 60.0 \
   --arglat 270.0 \
-  --theta_f 100 \
+  --revs 100 \
   --direction 1 \
   --samples 40 \
-  --outprefix eci
+  --frame ecliptic
 ```
 
 This script prompts the convergence information to the terminal, and generates three output files in the `./output` directory:
 
-* `eci_pos.csv` with columns `x,y,z` in Ecliptic Frame (E) (meters),
-* `eci_vel.csv` with columns `vx,vy,vz` in Ecliptic Frame (E) (meters per second),
-* `eci_acc.csv` with columns `nx,ny,nz` in Ecliptic Frame (E) (meters per second squared).
+* `ecliptic_pos.csv` with columns `x,y,z` in Ecliptic Frame (E) (meters),
+* `ecliptic_vel.csv` with columns `vx,vy,vz` in Ecliptic Frame (E) (meters per second),
+* `ecliptic_acc.csv` with columns `nx,ny,nz` in Ecliptic Frame (E) (meters per second squared).
 
 ---
 
@@ -123,9 +123,9 @@ This script prompts the convergence information to the terminal, and generates t
 ├── examples
 │   └── 01_true_anomaly_demo.py
 ├── output
-│   ├── eci_acc.csv
-│   ├── eci_pos.csv
-│   ├── eci_vel.csv
+│   ├── ecliptic_acc.csv
+│   ├── ecliptic_pos.csv
+│   ├── ecliptic_vel.csv
 │   ├── indirect_output.csv
 │   ├── indirect_output_conv.csv
 │   └── indirect_output_guess.csv
@@ -141,9 +141,7 @@ This script prompts the convergence information to the terminal, and generates t
 │   ├── requires.txt
 │   └── top_level.txt
 └── scripts
-    ├── solve_and_dump.py
-    ├── true_anomaly_matint.py
-    └── true_anomaly_matint_optical.py
+    └── solve_and_dump.py
 ```
 
 ---
@@ -172,7 +170,7 @@ This script prompts the convergence information to the terminal, and generates t
   JAX-only root finding. Returns `(params, residual_norm, num_evals, success)`.  
 * `integrate(s_solution, theta_bar_points)`
   Returns stacked state+costate at samples. Shape `(N, 8)`.   
-* `eci_vectors(s_solution, theta_bar_points)`
+* `ecliptic_vectors(s_solution, theta_bar_points)`
   Returns `(pos_eci, vel_eci, acc_eci)` each `(N, 3)`.  
 
 ### `TransferProblem_Time(...)`

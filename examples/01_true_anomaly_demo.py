@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: MIT
 import numpy as np
 import jax.numpy as jnp
-from sailtransfer import TransferProblem_TrueAnomaly
 import time
+from sailtransfer import TransferProblem_TrueAnomaly
 
 def main():
     # Input parameters

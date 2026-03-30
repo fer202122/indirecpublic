@@ -15,19 +15,24 @@ Requires-Dist: diffrax==0.7.0
 Requires-Dist: jaxopt==0.8.5
 Dynamic: license-file
 
-# Code for Characterization of Multi-Revolution Circular-to-Circular Solar-Sail Transfers Around Planets
+# Indirect Optimal Control for Planar Solar-Sail Transfers
 
-> JAX-based reference implementation for **planar planetocentric circular-to-circular solar-sail transfers** solved via **indirect optimal control** (single shooting).
-> Two formulations are provided:
->
-> * `TransferProblem_TrueAnomaly` — integrate with **normalized true anomaly** as the independent variable.
-> * `TransferProblem_Time` — integrate with **normalized time** as the independent variable.
+This repository contains a [JAX](https://github.com/jax-ml/jax)-based reference implementation for **planar planetocentric circular-to-circular (C2C) solar-sail transfers** solved via **indirect optimal control** (single shooting).
+
+The dynamics are formulated in a polar coordinate system. The indirect Optimal Control Problem (OCP) is set up using the Calculus of Variations and Pontryagin's Maximum Principle. This principle allows the control input to be written as a function of the costates, for which the dynamics are derived from the objective function and the Hamiltonian. As a result, the problem is transformed into a finitedimensional two-point boundary value problem (TPBVP). 
+
+In this indirect problem formulation, only an initial guess of the costates and Lagrange multipliers is required. The resulting system is then solved using a single-shooting method. This solver framework is then applied to multiple-revolution planetocentric transfers to analyze optimal sail behavior and assess overall transfer performance. 
+
+The defined optimization framework can effectively solve multiple-revolution transfers with either time or anomaly as the independent variable. Both formulations are provided in this repositor (see `./sailtransfer/problems.py`):  
+
+* `TransferProblem_TrueAnomaly` — integrate with **normalized true anomaly** as the independent variable.  
+* `TransferProblem_Time` — integrate with **normalized time** as the independent variable.  
 
 Both classes expose:
 
-* `optimize_fsolve(...)` and `optimize_jaxopt(...)` to solve for the optimal initial costates and multipliers.
-* `integrate(...)` to sample the optimal state+costate along the trajectory.
-* `eci_vectors(...)` to return **ECI position**, **ECI velocity**, and **ECI solar-sail acceleration** at requested samples.
+* `optimize_fsolve(...)` and `optimize_jaxopt(...)` to solve for the optimal initial costates and multipliers.  
+* `integrate(...)` to sample the optimal state+costate along the trajectory.  
+* `ecliptic_vectors(...)` to return the Ecliptic (ECL) **position**, **velocity**, and **solar-sail acceleration** at requested samples.  
 
 ---
 
@@ -43,36 +48,34 @@ Both classes expose:
 * [License](#license)
 * [References](#references)
 * [Cite this repository](#cite-this-repository)
-* [Would you like to contribute?](#would-you-like-to-contribute?)
+* [Would you like to contribute?](#would-you-like-to-contribute)
 
 ---
 
 ## Features
 
-* Indirect OCP with **single shooting** and tight terminal constraints (circularization).
-* Thrust direction from **primer vector**; sail law uses cone/clock angles in a **sun-line frame**.
-* Clean frame handling (RTN → ORB → ECI → SLF) with robust numerics (clamps/epsilons).
-* High-accuracy integration via **diffrax** (Dopri8 + PID controller).
-* Pure JAX math for speed and jit-ability.
-* Convenience function `eci_vectors(...)` to get **(x, y, z)**, **(vx, vy, vz)**, **(nx, ny, nz)** in **ECI**.
+* Indirect OCP with **single shooting** and tight terminal constraints (circularization).  
+* Thrust direction from **primer vector**; sail law uses cone/clock angles in a **sun-line frame**.  
+* Clean frame handling (Radial-Transverse-Normal (RTN) → Orbital (ORB) → Ecliptic (ECL) → Sun-Line Frame (SLF)) with robust numerics (clamps/epsilons).  
+* High-accuracy integration via **diffrax** (Dopri8 + PID controller).  
+* Pure JAX math for speed and jit-ability.  
+* Convenience function `ecliptic_vectors(...)` to get position **(x, y, z)**, velocity **(vx, vy, vz)** and acceleration **(nx, ny, nz)** in **ECL** frame.  
 
 ---
 
 ## Install
 
-> Requires Python **3.10+**.
+> Requires Python **3.13+**.
 
 ```bash
 # optional: create a clean environment
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 source .venv/bin/activate
-
 python -m pip install -U pip
-
 # clone and install in editable mode
-git clone https://github.com/oskarmiller/OskarMiller_MScThesis.git
-cd solar-sail-transfer
+git clone https://github.com/fer202122/indirecpublic.git
+cd indirecpublic
 python -m pip install -e .
 ```
 
@@ -86,18 +89,21 @@ Run from repo root after install:
 python examples/01_true_anomaly_demo.py
 ```
 
-Each script:
+The script:
 
-* builds a problem instance,
-* solves with a basic initial guess,
-* prints convergence info, and
-* returns ECI vectors on a grid.
+* builds a problem instance;   
+* solves the trajectory with a basic initial guess;     
+* prompts the convergence information to the terminal;     
+* generates 3 files in the `./output` folder:
+    - `indirect_output.csv`: contains the normalized trajectory data including orbital states, sail orientation (sunlight frame) and costates;  
+    - `indirect_output_conv.csv`: contains the optimization convergence information (`optimize_fsolve`);    
+    - `indirect_output_guess.csv`: contains the solution to the initial guess.  
 
 ---
 
 ## Command-line helper
 
-A tiny CLI is included to solve and dump CSVs:
+A tiny CLI is included to solve and dump the outputs to CSV files:
 
 ```bash
 python scripts/solve_and_dump.py \
@@ -109,41 +115,53 @@ python scripts/solve_and_dump.py \
   --raan 30.0 \
   --inc 60.0 \
   --arglat 270.0 \
-  --theta_f 100 \
+  --revs 100 \
   --direction 1 \
   --samples 40 \
-  --outprefix eci
+  --frame ecliptic
 ```
 
-Outputs:
+This script prompts the convergence information to the terminal, and generates three output files in the `./output` directory:
 
-* `eci_pos.csv` with columns `x,y,z` in Ecliptic Frame (E) (meters),
-* `eci_vel.csv` with columns `vx,vy,vz` in Ecliptic Frame (E) (meters per second),
-* `eci_acc.csv` with columns `nx,ny,nz` in Ecliptic Frame (E) (meters per second squared).
+* `ecliptic_pos.csv` with columns `x,y,z` in Ecliptic Frame (E) (meters),
+* `ecliptic_vel.csv` with columns `vx,vy,vz` in Ecliptic Frame (E) (meters per second),
+* `ecliptic_acc.csv` with columns `nx,ny,nz` in Ecliptic Frame (E) (meters per second squared).
 
 ---
 
 ## Project structure
 
 ```
-solar-sail-transfer/
-├─ README.md
-├─ LICENSE
-├─ pyproject.toml
-├─ .gitignore
-├─ sailtransfer/
-│  ├─ __init__.py
-│  └─ problems.py          # TransferProblem_TrueAnomaly, TransferProblem_Time
-├─ examples/
-│  └─ 01_true_anomaly_demo.py
-└─ scripts/
-   └─ solve_and_dump.py
+.
+├── LICENSES
+│   ├── CC-BY-4.0.txt
+│   └── MIT.txt
+├── README.md
+├── examples
+│   └── 01_true_anomaly_demo.py
+├── output
+│   ├── ecliptic_acc.csv
+│   ├── ecliptic_pos.csv
+│   ├── ecliptic_vel.csv
+│   ├── indirect_output.csv
+│   ├── indirect_output_conv.csv
+│   └── indirect_output_guess.csv
+├── pyproject.toml
+├── requirements-min.txt
+├── sailtransfer
+│   ├── problems.py
+│   └── solution_library.py
+├── sailtransfer.egg-info
+│   ├── PKG-INFO
+│   ├── SOURCES.txt
+│   ├── dependency_links.txt
+│   ├── requires.txt
+│   └── top_level.txt
+└── scripts
+    ├── solve_and_dump.py
+    ├── true_anomaly_matint.py
+    └── true_anomaly_matint_optical.py
 ```
-
-* **sailtransfer/problems.py**: your thesis code with both formulations and `eci_vectors(...)`.
-* **examples/**: runnable scripts illustrating both modes.
-* **scripts/solve_and_dump.py**: quick CSV export for plotting.
-* **tests/**: smoke tests on shapes (does not require convergence).
 
 ---
 
@@ -153,34 +171,34 @@ solar-sail-transfer/
 
 **Constructor arguments (SI unless stated):**
 
-* `r_0` — initial radius [m]
-* `mu_central_body` — gravitational parameter [m^3/s^2]
-* `rotational_speed_central_body` — rotation rate [rad/s]
-* `a_0` — characteristic acceleration [m/s^2]
-* `raan` — right ascension of ascending node [rad]
-* `inclination` — inclination [rad]
-* `arg_of_latitude` — argument of latitude at start [rad]
-* `theta_f` — final physical true anomaly span [rad] (trajectory integrates normalized `theta_bar` from 0 to 1)
-* `direction` — Ascending (1) or descending (-1)
+* `r_0` — initial radius [m]  
+* `mu_central_body` — gravitational parameter [m^3/s^2]  
+* `rotational_speed_central_body` — rotation rate [rad/s]  
+* `a_0` — characteristic acceleration [m/s^2]  
+* `raan` — right ascension of ascending node [rad]  
+* `inclination` — inclination [rad]  
+* `arg_of_latitude` — argument of latitude at start [rad]  
+* `theta_f` — final physical true anomaly span [rad] (trajectory integrates normalized `theta_bar` from 0 to 1)  
+* `direction` — Ascending (1) or descending (-1)  
 
 **Methods:**
 
 * `optimize_fsolve(s_initial_guess_np, xtol_fsolve=1e-10)`
-  Returns `(solution_params, residual_norm, num_evals, success)`.
+  Returns `(solution_params, residual_norm, num_evals, success)`.  
 * `optimize_jaxopt(s_initial_guess_np, tol_jaxopt=1e-10)`
-  JAX-only root finding. Returns `(params, residual_norm, num_evals, success)`.
+  JAX-only root finding. Returns `(params, residual_norm, num_evals, success)`.  
 * `integrate(s_solution, theta_bar_points)`
-  Returns stacked state+costate at samples. Shape `(N, 8)`.
-* `eci_vectors(s_solution, theta_bar_points)`
-  Returns `(pos_eci, vel_eci, acc_eci)` each `(N, 3)`.
+  Returns stacked state+costate at samples. Shape `(N, 8)`.   
+* `ecliptic_vectors(s_solution, theta_bar_points)`
+  Returns `(pos_eci, vel_eci, acc_eci)` each `(N, 3)`.  
 
 ### `TransferProblem_Time(...)`
 
-Same as above, but with:
+Same as above, but with:  
 
-* `time_f` — final physical time span [s] (trajectory integrates normalized `time_bar` from 0 to 1).
+* `time_f` — final physical time span [s] (trajectory integrates normalized `time_bar` from 0 to 1).  
 
-**Methods** mirror the true-anomaly class with `time_bar_points`.
+**Methods** mirror the true-anomaly class with `time_bar_points`.  
 
 ---
 
@@ -195,12 +213,11 @@ This software was developed by:
 
 ## License
 
-All source code files available in this repository are licensed under a MIT license (see `./LICENSE`).
+All source code files available in this repository (Python scripts) are licensed under a MIT license (see `./LICENSES/MIT.txt`). Other files (`.csv`) are released under a Creative Commons Attribution 4.0 International Public License (see `./LICENSES/CC-BY-4.0.txt`).  
 
 Copyright notice:
 
-Technische Universiteit Delft hereby disclaims all copyright interest in the program "Characterization of Multi-Revolution Circular-to-Circular
-Solar-Sail Transfers Around Planets" written by the Author(s). 
+Technische Universiteit Delft hereby disclaims all copyright interest in the program "Indirect Optimal Control for Planar Solar-Sail Transfers" written by the Author(s). 
 Henri Werij, Faculty of Aerospace Engineering, Technische Universiteit Delft.
 
 © 2026, O. Miller, F. Gámez Losada
@@ -209,15 +226,13 @@ Henri Werij, Faculty of Aerospace Engineering, Technische Universiteit Delft.
 
 ## References  
 
-- [Characterization of Multi-Revolution Circular-to-Circular
-Solar-Sail Transfers Around Planets](TODO BLA: Paste DOI paper here)  
-
+- [Characterization of Multi-Revolution Circular-to-Circular Solar-Sail Transfers Around Planets](TODO BLA: Paste DOI paper here)   
+- Miller, O. (2025). *Indirect Optimization of Planetocentric Solar Sail Trajectories for Circular Orbit Transfers*. Master's thesis, Technische Universiteit Delft. [https://resolver.tudelft.nl/uuid:81d4cda9-27e4-4497-b21c-fbca8534ffb9](https://resolver.tudelft.nl/uuid:81d4cda9-27e4-4497-b21c-fbca8534ffb9)
 ---
 
 ## Cite this repository
 
-**How to cite this repository:** O. Miller, F. Gámez Losada, 2026, Code for Characterization of Multi-Revolution Circular-to-Circular
-Solar-Sail Transfers Around Planets. 4TU.ResearchData. Software. https://doi.org/10.4121/36e472de-7ccf-44b4-b3fa-7215d094faf1
+**How to cite this repository:** O. Miller, F. Gámez Losada, 2026, Indirect Optimal Control for Planar Solar-Sail Transfers. 4TU.ResearchData. Software. [https://doi.org/10.4121/36e472de-7ccf-44b4-b3fa-7215d094faf1](https://doi.org/10.4121/36e472de-7ccf-44b4-b3fa-7215d094faf1)
 
 ---
 
