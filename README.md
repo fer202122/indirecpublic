@@ -1,4 +1,4 @@
-# Indirect Optimal Control for Planar Solar-Sail Transfers
+subl # Indirect Optimal Control for Planetocentric Solar-Sail Transfers
 
 This repository contains a [JAX](https://github.com/jax-ml/jax)-based reference implementation for **planar planetocentric circular-to-circular (C2C) solar-sail transfers** solved via **indirect optimal control** (single shooting).
 

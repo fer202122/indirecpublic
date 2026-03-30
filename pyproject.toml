@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "sailtransfer"
 version = "0.1.0"
-description = "Indirect optimal control for planar solar-sail transfers"
+description = "Indirect optimal control for planetocentric solar-sail transfers"
 readme = "README.md"
 requires-python = ">=3.13"
 authors = [{name = "Oskar Miller", email = "oskar.miller@gscan.eu"}]
