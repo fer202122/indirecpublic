@@ -207,7 +207,7 @@ Henri Werij, Faculty of Aerospace Engineering, Technische Universiteit Delft.
 
 ## References  
 
-- [Characterization of Multi-Revolution Circular-to-Circular Solar-Sail Transfers Around Planets](10.1016/j.ast.2026.113127)   
+- [Characterization of Multi-Revolution Circular-to-Circular Solar-Sail Transfers Around Planets](https://doi.org/10.1016/j.ast.2026.113127)   
 - Miller, O. (2025). *Indirect Optimization of Planetocentric Solar Sail Trajectories for Circular Orbit Transfers*. Master's thesis, Technische Universiteit Delft. [https://resolver.tudelft.nl/uuid:81d4cda9-27e4-4497-b21c-fbca8534ffb9](https://resolver.tudelft.nl/uuid:81d4cda9-27e4-4497-b21c-fbca8534ffb9)
 ---
 
